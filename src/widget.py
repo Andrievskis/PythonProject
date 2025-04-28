@@ -9,10 +9,15 @@ def mask_account_card(number: str) -> str:
         raise ValueError("Вы не ввели номер счета (карты)!")
     if str(number).isdigit() or str(number).isalpha():
         raise ValueError("Введите корректный номер! Вы ввели только буквы (или только цифры)!")
-
     number_name_list = number.split()
-    number_name_list[-1] = get_mask_card_number(number_name_list[-1])
-    if number_name_list[0] == "Счет":
+    if (
+        len(number_name_list[-1]) == 16
+        or len(number_name_list[-1]) == 13
+        or len(number_name_list[-1]) == 19
+        or len(number_name_list[-1]) == 15
+    ):
+        number_name_list[-1] = get_mask_card_number(number_name_list[-1])
+    elif len(number_name_list[-1]) == 20:
         number_name_list[-1] = get_mask_account(number_name_list[-1])
     number_name_list_str = " ".join(number_name_list)
     return number_name_list_str

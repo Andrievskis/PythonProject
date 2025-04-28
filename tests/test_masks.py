@@ -7,7 +7,7 @@ from src.masks import get_mask_account, get_mask_card_number
     "number, expected_result",
     [
         ("7000792289606361", "7000 79** **** 6361"),
-        ("70007922896060", "7000 79** **60 60"),
+        ("700079228960606", "7000 79** ***0 606"),
         ("7000792289606", "7000 79** *960 6"),
         ("7000792289606361000", "7000 79** **** ***1 000"),
     ],
@@ -24,6 +24,35 @@ def test_get_mask_card_number_absent(number_absent: str, expected_result_mask_ca
     """Проверка, что функция корректно обрабатывает входные строки, где отсутствует номер карты."""
     with pytest.raises(ValueError):
         get_mask_card_number(number_absent) == expected_result_mask_card_number_absent
+
+
+@pytest.mark.parametrize(
+    "number_invalid_type_data, expected_result_invalid_type_data", [(12345678, "TypeError"), (567.8, "TypeError")]
+)
+def test_get_mask_card_number_invalid_type_data(
+    number_invalid_type_data: str, expected_result_invalid_type_data: str
+) -> None:
+    """Проверка, что функция корректно обрабатывает входные строки, где некорректный тип данных."""
+    with pytest.raises(TypeError):
+        get_mask_card_number(number_invalid_type_data) == expected_result_invalid_type_data
+
+
+@pytest.mark.parametrize(
+    "number_incorrect, expected_result_mask_card_number_incorrect",
+    [
+        ("700079", "ValueError"),
+        ("70007989074", "ValueError"),
+        ("70007922896063610009", "ValueError"),
+        ("hhjjklllipppp", "ValueError"),
+    ],
+)
+def test_get_mask_card_number_incorrect(
+    number_incorrect: str, expected_result_mask_card_number_incorrect: str
+) -> None:
+    """Проверка, что функция корректно обрабатывает входные строки, где введен некорректный номер карты
+    (длинна номера карты должна быть 13, 15, 16 или 19 и только цифры)."""
+    with pytest.raises(ValueError):
+        get_mask_card_number(number_incorrect) == expected_result_mask_card_number_incorrect
 
 
 @pytest.mark.parametrize(
@@ -46,3 +75,14 @@ def test_get_mask_by_incorrect_bank_account(
     Проверка, что функция корректно обрабатывает входные данные, где номер счета меньше ожидаемой длины."""
     with pytest.raises(ValueError):
         get_mask_account(incorrect_bank_account) == expected_result_by_incorrect_bank_account
+
+
+@pytest.mark.parametrize(
+    "account_invalid_type_data, expected_result_invalid_type_data_", [(12345678, "TypeError"), (567.8, "TypeError")]
+)
+def test_get_mask_account_invalid_type_data(
+    account_invalid_type_data: str, expected_result_invalid_type_data_: str
+) -> None:
+    """Проверка, что функция корректно обрабатывает входные строки, где некорректный тип данных."""
+    with pytest.raises(TypeError):
+        get_mask_card_number(account_invalid_type_data) == expected_result_invalid_type_data_
