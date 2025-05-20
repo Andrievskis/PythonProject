@@ -19,7 +19,7 @@ def get_mask_card_number(number_card: str) -> str:
 
 
 # Маскировка номера карты.
-# print(get_mask_card_number("7000792289606361000"))
+print(get_mask_card_number("7000792289606361000"))
 
 # ValueError: Вы ввели некорректный номер карты! (длинна номера карты должна быть 13, 15, 16 или 19 и только цифры)
 # print(get_mask_card_number("700079"))
