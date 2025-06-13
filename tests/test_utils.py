@@ -1,8 +1,9 @@
-import unittest
-from unittest.mock import patch, mock_open
 import json
+import unittest
+from typing import Any, Dict, List
+from unittest.mock import mock_open, patch
+
 from src.utils import operations_file
-from typing import List, Dict, Any
 
 
 @patch("builtins.open", new_callable=mock_open)

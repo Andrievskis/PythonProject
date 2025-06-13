@@ -1,6 +1,7 @@
 import unittest
 from typing import Any, Dict
 from unittest.mock import patch
+
 from src.external_api import get_conversion
 
 # Тестовые данные
