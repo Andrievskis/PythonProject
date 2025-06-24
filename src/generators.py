@@ -66,6 +66,8 @@ def filter_by_currency(transactions: list[dict], currency_transaction: str) -> A
     for transaction in transactions:
         if transaction.get("operationAmount", {}).get("currency", {}).get("code") == currency_transaction:
             yield transaction
+        elif transaction.get("currency_code") == currency_transaction:
+            yield transaction
 
 
 # Работа функции с пустым списком транзакций. Вывод: Список пустой! Конец списка!
@@ -104,9 +106,6 @@ def transaction_descriptions(transactions: list[dict]) -> Any:
             yield "Нет информации о транзакции!"
 
 
-# Работа функции с пустым списком транзакций. Вывод: Список пустой! Конец списка!
-# descriptions = transaction_descriptions([])
-
 # Корректные описания для каждой транзакции.
 # descriptions = transaction_descriptions(transactions)
 
@@ -114,7 +113,7 @@ def transaction_descriptions(transactions: list[dict]) -> Any:
 # Вывод: Перевод организации Нет информации о транзакции! Перевод со счета на счет
 # descriptions = transaction_descriptions(transactions_for_func_descriptions)
 # try:
-#     for _ in range(5):
+#     for _ in range(10):
 #         print(next(descriptions))
 # except StopIteration:
 #     print("Конец списка!")

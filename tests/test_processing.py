@@ -1,6 +1,9 @@
+from collections import Counter
+from typing import Any
+
 import pytest
 
-from src.processing import filter_by_state, sort_by_date
+from src.processing import filter_by_state, process_bank_operations, process_bank_search, sort_by_date
 
 
 @pytest.fixture
@@ -213,3 +216,175 @@ def test_sort_by_incorrect_dates(
             reverse_any_,
         )
         result_sort_by_incorrect_dates == expected_sort_by_incorrect_dates
+
+
+@pytest.fixture
+def data_list() -> list[dict]:
+    return [
+        {
+            "id": 939719570,
+            "state": "EXECUTED",
+            "date": "2018-06-30T02:08:58.425572",
+            "operationAmount": {"amount": "9824.07", "currency": {"name": "USD", "code": "USD"}},
+            "description": "Перевод организации",
+            "from": "Счет 75106830613657916952",
+            "to": "Счет 11776614605963066702",
+        },
+        {
+            "id": 142264268,
+            "state": "EXECUTED",
+            "date": "2019-04-04T23:20:05.206878",
+            "operationAmount": {"amount": "79114.93", "currency": {"name": "USD", "code": "USD"}},
+            "description": "Перевод со счета на счет",
+            "from": "Счет 19708645243227258542",
+            "to": "Счет 75651667383060284188",
+        },
+        {
+            "id": 167764268,
+            "state": "EXECUTED",
+            "date": "2020-04-04T23:20:05.206878",
+            "operationAmount": {"amount": "79114.93", "currency": {"name": "EUR", "code": "EUR"}},
+            "description": "Перевод со счета на счет",
+            "from": "Счет 19708645243227258542",
+            "to": "Счет 756516673830602841455",
+        },
+    ]
+
+
+@pytest.mark.parametrize(
+    "search_string, expected_result",
+    [
+        (
+            "перевод организации",
+            [
+                {
+                    "id": 939719570,
+                    "state": "EXECUTED",
+                    "date": "2018-06-30T02:08:58.425572",
+                    "operationAmount": {"amount": "9824.07", "currency": {"name": "USD", "code": "USD"}},
+                    "description": "Перевод организации",
+                    "from": "Счет 75106830613657916952",
+                    "to": "Счет 11776614605963066702",
+                }
+            ],
+        ),
+        (
+            "Перевод со СЧЕТА на счет",
+            [
+                {
+                    "id": 142264268,
+                    "state": "EXECUTED",
+                    "date": "2019-04-04T23:20:05.206878",
+                    "operationAmount": {"amount": "79114.93", "currency": {"name": "USD", "code": "USD"}},
+                    "description": "Перевод со счета на счет",
+                    "from": "Счет 19708645243227258542",
+                    "to": "Счет 75651667383060284188",
+                },
+                {
+                    "id": 167764268,
+                    "state": "EXECUTED",
+                    "date": "2020-04-04T23:20:05.206878",
+                    "operationAmount": {"amount": "79114.93", "currency": {"name": "EUR", "code": "EUR"}},
+                    "description": "Перевод со счета на счет",
+                    "from": "Счет 19708645243227258542",
+                    "to": "Счет 756516673830602841455",
+                },
+            ],
+        ),
+    ],
+)
+def test_process_bank_search(data_list: list[dict], search_string: str, expected_result: list[dict]) -> None:
+    """Тест на корректную работу функции (и без учета регистра)."""
+    result = process_bank_search(data_list, search_string)
+    assert result == expected_result
+
+
+@pytest.mark.parametrize(
+    "search_string_empty, expected_result_",
+    [
+        (
+            "",
+            [
+                {
+                    "id": 939719570,
+                    "state": "EXECUTED",
+                    "date": "2018-06-30T02:08:58.425572",
+                    "operationAmount": {"amount": "9824.07", "currency": {"name": "USD", "code": "USD"}},
+                    "description": "Перевод организации",
+                    "from": "Счет 75106830613657916952",
+                    "to": "Счет 11776614605963066702",
+                },
+                {
+                    "id": 142264268,
+                    "state": "EXECUTED",
+                    "date": "2019-04-04T23:20:05.206878",
+                    "operationAmount": {"amount": "79114.93", "currency": {"name": "USD", "code": "USD"}},
+                    "description": "Перевод со счета на счет",
+                    "from": "Счет 19708645243227258542",
+                    "to": "Счет 75651667383060284188",
+                },
+                {
+                    "id": 167764268,
+                    "state": "EXECUTED",
+                    "date": "2020-04-04T23:20:05.206878",
+                    "operationAmount": {"amount": "79114.93", "currency": {"name": "EUR", "code": "EUR"}},
+                    "description": "Перевод со счета на счет",
+                    "from": "Счет 19708645243227258542",
+                    "to": "Счет 756516673830602841455",
+                },
+            ],
+        )
+    ],
+)
+def test_process_bank_search_empty(
+    data_list: list[dict], search_string_empty: str, expected_result_: list[dict]
+) -> None:
+    """Тест на корректную работу функции с пустой строкой поиска."""
+    result_ = process_bank_search(data_list, search_string_empty)
+    assert result_ == expected_result_
+
+
+@pytest.mark.parametrize("search_string_unknown_operation, expected", [("операция", [])])
+def test_process_bank_search_unknown_operation(
+    data_list: list[dict], search_string_unknown_operation: str, expected: list
+) -> None:
+    """Тест на корректную работу функции с неизвестной операцией."""
+    result = process_bank_search(data_list, search_string_unknown_operation)
+    assert result == expected
+
+
+@pytest.mark.parametrize(
+    "categories, expected_result_categories",
+    [
+        (
+            [
+                "Перевод организации",
+                "Открытие вклада",
+                "Перевод со счета на счет",
+                "Перевод с карты на карту",
+                "Перевод с карты на счет",
+            ],
+            {"Перевод организации": 1, "Перевод со счета на счет": 2},
+        )
+    ],
+)
+def test_process_bank_operations(categories: list, expected_result_categories: Counter, data_list: list[dict]) -> None:
+    """Тест на корректную работу функции подсчета количества банковских операций определенного типа.
+    С использованием Counter."""
+    result_categories = process_bank_operations(data_list, categories)
+    assert result_categories == expected_result_categories
+
+
+@pytest.mark.parametrize(
+    "categories_error, expected_error",
+    [
+        ("Перевод организации", TypeError),
+        (28754578, TypeError),
+        ({"Перевод организации", "Открытие вклада"}, TypeError),
+    ],
+)
+def test_process_bank_operations_error(data_list: list[dict], categories_error: Any, expected_error: str) -> None:
+    """Тест на обработку ошибки, в случе передачи (categories) некорректного типа данных."""
+    with pytest.raises(TypeError):
+        result_categories_error = process_bank_operations(data_list, categories_error)
+        assert result_categories_error == expected_error
