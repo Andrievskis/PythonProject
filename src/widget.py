@@ -28,33 +28,28 @@ def mask_account_card(number: str) -> str:
 # print(mask_account_card("Maestro 7000792289606361"))
 # print(mask_account_card("Счет 73654108430135874305"))
 
-# Обработка передачи пустой информации. ValueError: Вы не ввели номер счета (карты)!
-# print(mask_account_card(""))
-
-# Некорректный ввод информации (введены только цифры).
-# ValueError: Введите корректный номер! Вы ввели только буквы (или только цифры)!
-# print(mask_account_card("7000792289606361"))
-# print(mask_account_card(987654321245678))
-
-# Некорректный ввод информации (введены только буквы).
-# ValueError: Введите корректный номер! Вы ввели только буквы (или только цифры)!
-# print(mask_account_card("Счет"))
-# print(mask_account_card("Maestro"))
-# print(mask_account_card(None))
-
 
 def get_date(date_: str) -> str:
-    """Функция, для изменения формата даты."""
+    """Функция для изменения формата даты."""
     try:
-        dt = datetime.strptime(date_, "%Y-%m-%dT%H:%M:%S.%f")
+        dt = datetime.strptime(date_, "%Y-%m-%dT%H:%M:%S.%fZ")
         return dt.strftime("%d.%m.%Y")
     except ValueError:
-        raise ValueError("Некорректный формат ввода даты. Введите корректный формат даты!")
+        try:
+            dt = datetime.strptime(date_, "%Y-%m-%dT%H:%M:%S%z")
+            return dt.strftime("%d.%m.%Y")
+        except ValueError:
+            try:
+                dt = datetime.strptime(date_, "%Y-%m-%dT%H:%M:%S.%f")
+                return dt.strftime("%d.%m.%Y")
+            except ValueError:
+                raise ValueError(
+                    "Некорректный формат ввода даты. "
+                    "Поддерживаются форматы: %Y-%m-%dT%H:%M:%S.%fZ, %Y-%m-%dT%H:%M:%S%z и %Y-%m-%dT%H:%M:%S.%f. "
+                    "Введите корректный формат даты!"
+                )
 
 
-# Обработка некорректоного формата ввода для данной функции.
-# ValueError: Некорректный формат ввода даты. Введите корректный формат даты!
-# print(get_date("2024-03-11"))
-
-# Обработка корректоного формата ввода для данной функции. 11.03.2024
+# Обработка корректоного формата ввода для данной функции.
 # print(get_date("2024-03-11T02:26:18.671407"))
+# print(get_date('2023-01-25T13:33:00Z'))
