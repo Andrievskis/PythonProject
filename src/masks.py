@@ -37,17 +37,7 @@ def get_mask_card_number(number_card: str) -> str:
 
 
 # Маскировка номера карты.
-print(get_mask_card_number("7000792289606361000"))
-
-# ValueError: Вы ввели некорректный номер карты! (длинна номера карты должна быть 13, 15, 16 или 19 и только цифры)
-# print(get_mask_card_number("700079"))
-# print(get_mask_card_number('aaaaaaaaaaaaa'))
-
-# TypeError: Ошибка типа данных.
-# print(get_mask_card_number(7000792289606361000))
-
-# ValueError: Вы не ввели номер карты!
-# print(get_mask_card_number(""))
+# print(get_mask_card_number("7000792289606361000"))
 
 
 def get_mask_account(number_account: str) -> str:
@@ -69,16 +59,4 @@ def get_mask_account(number_account: str) -> str:
 
 
 # Маскировка номера счета.
-print(get_mask_account("70007922896063610009"))
-
-
-# TypeError: Ошибка типа данных.
-# print(get_mask_account(70007922896063610000))
-
-
-# ValueError: Вы не ввели номер счета!
-# print(get_mask_account(""))
-
-
-# ValueError: Вы ввели некорректный номер счета!
-# print(get_mask_account("7000"))
+# print(get_mask_account("70007922896063610009"))

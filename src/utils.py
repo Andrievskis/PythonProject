@@ -37,13 +37,4 @@ def operations_file(path_to_file: Any) -> Any:
 
 # Путь к существующему файлу
 path_to_file_operations = "/Users/anastasiaandreeva/PycharmProjects/PythonProject/data/operations.json"
-print(operations_file(path_to_file_operations))
-
-# Путь к существующему файлу, в котором содержится не список словарей
-# создан для этого отдельный файл operations_not_list_dict.json чтобы проверить кострукцию: если это не список словарей
-path_to_file_operations = "/Users/anastasiaandreeva/PycharmProjects/PythonProject/data/operations_not_list_dict.json"
-print(operations_file(path_to_file_operations))
-
-# Путь к несуществующему файлу
-path_to_file_operations_not_found = "/operations.json"
-print(operations_file(path_to_file_operations_not_found))
+# print(operations_file(path_to_file_operations))
